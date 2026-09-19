@@ -275,13 +275,22 @@ const DATA = {
           [16,16,[500,150,175,175],1000]]}
 };
 
-/* ═══════════ 食材 → 套餐號對照 ═══════════ */
+/* ═══════════ 食材清單 ═══════════ */
 const FOODS = [
-  { cat:'穀類主食',      items:[['胚芽米',1],['米豆',2],['糙薏仁',3]] },
-  { cat:'綠色蔬菜',      items:[['高麗菜',1],['花椰菜',2]] },
-  { cat:'根莖菜類（菜1）', items:[['地瓜',1],['栗子',2],['蓮藕',3]] },
-  { cat:'根莖豆類（菜2）', items:[['紅蘿蔔',1],['馬鈴薯',2],['毛豆',4]] },
+  { cat:'穀類主食',      items:['胚芽米','米豆','糙薏仁'] },
+  { cat:'綠色蔬菜',      items:['高麗菜','花椰菜'] },
+  { cat:'根莖菜類（菜1）', items:['地瓜','栗子','蓮藕'] },
+  { cat:'根莖豆類（菜2）', items:['紅蘿蔔','馬鈴薯','蘋果'] },
 ];
+
+/* ═══════════ 判斷規則：吃過幾種 → 建議階段 ═══════════
+   改門檻只要動這張表。max = 吃過的數量上限（含）       */
+const RULES = [
+  { max: 2,        stage: 1, why: '吃過的食材還很少，從最基礎的開始' },
+  { max: 6,        stage: 2, why: '已經吃過一些基礎食材，可以進到第 2 階段' },
+  { max: Infinity, stage: 3, why: '大部分基礎食材都吃過了，可以進到第 3 階段' },
+];
+
 const eaten = new Set();
 
 const fEl = document.getElementById('foods');
@@ -289,7 +298,7 @@ fEl.innerHTML = FOODS.map(gp => `
   <div class="fgrp">
     <div class="fttl">${gp.cat}</div>
     <div class="chips">
-      ${gp.items.map(([n]) => `<button class="chip" data-f="${n}">${n}</button>`).join('')}
+      ${gp.items.map(n => `<button class="chip" data-f="${n}">${n}</button>`).join('')}
     </div>
   </div>`).join('');
 
@@ -309,32 +318,23 @@ function clearAll(){
 
 function suggest(){
   const all = FOODS.flatMap(g => g.items);
-  const missing = all.filter(([n]) => !eaten.has(n));
+  const had = all.filter(n => eaten.has(n));
+  const missing = all.filter(n => !eaten.has(n));
+  const cnt = had.length;
 
-  /* 只要某一號有食材沒吃過，就從那一號開始 → 取最小的號 */
-  const lowest = missing.length ? Math.min(...missing.map(([, l]) => l)) : 5;
-  const stage = Math.min(lowest, 12);
+  const rule = RULES.find(r => cnt <= r.max);
+  const stage = rule.stage;
   const s = DATA[stage];
-
-  const missHere = missing.filter(([, l]) => l === lowest).map(([n]) => n);
-  const missLater = missing.filter(([, l]) => l > lowest).map(([n, l]) => `${n}（${l}號）`);
-  const had = all.filter(([n]) => eaten.has(n)).map(([n]) => n);
 
   document.getElementById('result').innerHTML = `
     <div class="res">
       <div class="reshd">
-        <div class="s">建議從這裡開始</div>
+        <div class="s">吃過 ${cnt} / ${all.length} 種，建議從這裡開始</div>
         <div class="b">第 ${stage} 階段</div>
         <div class="n">${s.set}</div>
       </div>
       <div class="resbd">
-        ${missHere.length ? `<div class="rl">因為這些還沒吃過</div>
-          ${missHere.map(n => `<span class="tag">${n}</span>`).join('')}
-          <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.7">
-            都屬於 <b>${lowest} 號</b>，所以要從含 ${lowest} 號的階段開始。</div>`
-        : `<div class="rl">列出的食材都吃過了</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.7">
-            可以直接接續後面的階段，若不確定歡迎詢問客服。</div>`}
+        <div style="font-size:14px;color:var(--text);line-height:1.8">${rule.why}。</div>
 
         <div class="rl" style="margin-top:15px">這個階段怎麼吃</div>
         <div style="font-size:15px;line-height:1.9">
@@ -342,10 +342,10 @@ function suggest(){
           一整天溫開水 <b>${s.water}</b>
         </div>
 
-        ${had.length ? `<div class="rl" style="margin-top:14px">已經吃過</div>
+        ${had.length ? `<div class="rl" style="margin-top:14px">已經吃過（${had.length}）</div>
           ${had.map(n => `<span class="tag ok">${n}</span>`).join('')}` : ''}
-        ${missLater.length ? `<div class="rl" style="margin-top:12px">後面還會遇到</div>
-          ${missLater.map(n => `<span class="tag">${n}</span>`).join('')}` : ''}
+        ${missing.length ? `<div class="rl" style="margin-top:12px">還沒吃過（${missing.length}）</div>
+          ${missing.map(n => `<span class="tag">${n}</span>`).join('')}` : ''}
 
         <div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;
                     border-top:1px dashed var(--line);padding-top:10px">
