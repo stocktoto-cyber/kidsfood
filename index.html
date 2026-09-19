@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晴媽咪食物泥｜吃法查詢</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FCFAF6; --card:#FFF; --line:#E8E0D6;
+  --text:#2E2A26; --muted:#7A726A;
+  --orange:#CE7448; --orange-lt:#FFF3E8;
+  --green:#5B8F63; --green-lt:#EEF5EF;
+  --gold:#BE8A2E; --gold-lt:#FFF9EC;
+  --blue:#5B7BA8; --blue-lt:#EDF2F8;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:20px 14px 60px}
+.wrap{max-width:560px;margin:0 auto}
+
+.hero{background:var(--orange);border-radius:var(--r);padding:24px 20px;text-align:center;color:#fff;margin-bottom:18px}
+.hero h1{font-size:22px;font-weight:900}
+.hero p{font-size:14px;opacity:.92;margin-top:4px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.08em;margin-bottom:10px}
+
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.st{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 0;font-size:15px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
+.st.on{background:var(--orange);border-color:var(--orange);color:#fff}
+
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.daynum{font-size:26px;font-weight:900;color:var(--orange)}
+.daynum span{font-size:14px;font-weight:500;color:var(--muted)}
+.hint{font-size:12px;color:var(--muted)}
+input[type=range]{width:100%;height:32px;-webkit-appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:7px;background:#EFE6DA;border-radius:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--orange);border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.22);margin-top:-11px}
+input[type=range]::-moz-range-track{height:7px;background:#EFE6DA;border-radius:4px}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--orange);border:3px solid #fff}
+.daybtns{display:flex;gap:8px;margin-top:8px}
+.daybtns button{flex:1;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 0;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit}
+
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.mbox{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+.mbox .k{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.mbox .v{font-size:17px;font-weight:700;margin-top:2px}
+
+.sect{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin:0 0 10px 2px}
+
+/* ── 每一餐卡片 ── */
+.meal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:11px;overflow:hidden}
+.mhd{background:var(--orange-lt);padding:11px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F0E2D4}
+.mhd .t{font-size:15px;font-weight:900;color:#A5562F}
+.mhd .t small{font-size:12px;font-weight:700;color:#C08360;margin-left:6px}
+.mhd .amt{font-size:19px;font-weight:900;color:var(--orange)}
+.mbd{padding:13px 16px}
+.grp{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;padding:2px 0 4px}
+.mrow{display:flex;align-items:center;gap:10px;padding:6px 0}
+.mrow+.mrow{border-top:1px dashed #EFE7DC}
+.mrow .bar{width:5px;height:26px;border-radius:3px;background:var(--orange)}
+.mrow.veg .bar{background:var(--green)}
+.mrow .nm{flex:1;font-size:15px;font-weight:700}
+.mrow .nm small{display:block;font-size:12px;font-weight:500;color:var(--muted);line-height:1.5}
+.mrow .g{font-size:18px;font-weight:900;color:var(--orange)}
+.mrow.veg .g{color:var(--green)}
+
+/* ── 今日總表 ── */
+.item{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 15px;margin-bottom:7px;border-left:5px solid var(--orange)}
+.item.v{border-left-color:var(--green)}
+.item.a{border-left-color:var(--gold)}
+.item.b{border-left-color:var(--blue)}
+.item .nm{flex:1;font-size:15px;font-weight:700}
+.item .g{font-size:17px;font-weight:900;color:var(--orange)}
+.item.v .g{color:var(--green)} .item.a .g{color:var(--gold)} .item.b .g{color:var(--blue)}
+.item .new{font-size:11px;font-weight:700;background:#FFF0C2;color:#8A6A12;padding:2px 7px;border-radius:20px}
+
+.total{background:var(--orange-lt);border:1px solid #EEDFD1;border-radius:11px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.total .k{font-size:14px;font-weight:700;color:#A5562F}
+.total .v{font-size:21px;font-weight:900;color:var(--orange)}
+
+/* ── 頁籤 ── */
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tb{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 0;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;transition:.15s}
+.tb.on{background:var(--orange);border-color:var(--orange);color:#fff}
+
+/* ── 食材勾選 ── */
+.fgrp{margin-bottom:14px}
+.fgrp:last-of-type{margin-bottom:6px}
+.fttl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:22px;padding:8px 15px;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit;transition:.12s}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff}
+.reset{width:100%;margin-top:12px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit}
+
+/* ── 推薦結果 ── */
+.res{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.reshd{background:var(--green);color:#fff;padding:20px;text-align:center}
+.reshd .s{font-size:13px;opacity:.9}
+.reshd .b{font-size:28px;font-weight:900;margin-top:2px}
+.reshd .n{font-size:14px;opacity:.95;margin-top:4px}
+.resbd{padding:16px 18px}
+.resbd .rl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:7px}
+.tag{display:inline-block;background:#FFF0C2;color:#8A6A12;font-size:13px;font-weight:700;padding:4px 11px;border-radius:20px;margin:0 6px 6px 0}
+.tag.ok{background:var(--green-lt);color:#3F6B48}
+
+.note{background:var(--gold-lt);border:1px solid #EFDCB4;border-radius:11px;padding:14px 16px;font-size:13px;color:#7A5A18;line-height:1.75;margin-top:16px}
+.note b{display:block;margin-bottom:4px}
+.foot{text-align:center;margin-top:26px;font-size:12px;color:var(--muted)}
+@media(max-width:380px){.stages{grid-template-columns:repeat(4,1fr)}.hero h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>食物泥吃法查詢</h1>
+    <p>看看該從哪階段開始、每一餐怎麼吃</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tb on" onclick="tab('find')">我該從哪階段開始</button>
+    <button class="tb" onclick="tab('table')">吃法對照</button>
+  </div>
+
+  <!-- ══ 推薦階段 ══ -->
+  <div id="viewFind">
+    <div class="panel">
+      <div class="lbl">勾選寶寶「已經吃過」的食材</div>
+      <div id="foods"></div>
+      <button class="reset" onclick="clearAll()">清除全部</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <!-- ══ 吃法對照 ══ -->
+  <div id="viewTable" style="display:none">
+  <div class="panel">
+    <div class="lbl">選擇階段</div>
+    <div class="stages" id="stages"></div>
+  </div>
+
+  <div class="panel">
+    <div class="dayhead">
+      <div class="daynum">第 <span id="dNum">1</span> 天</div>
+      <div class="hint" id="dRange"></div>
+    </div>
+    <input type="range" id="slider" min="1" max="22" value="1">
+    <div class="daybtns">
+      <button onclick="step(-1)">← 前一天</button>
+      <button onclick="step(1)">後一天 →</button>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="mbox"><div class="k">寶寶月齡</div><div class="v" id="mAge">—</div></div>
+    <div class="mbox"><div class="k">一天餐數</div><div class="v" id="mMeal">—</div></div>
+  </div>
+
+  <div class="sect">每一餐這樣吃</div>
+  <div id="meals"></div>
+
+  <div class="sect" style="margin-top:20px">今日食材總量</div>
+  <div id="items"></div>
+  <div class="total">
+    <div class="k">一日食物泥總量</div>
+    <div class="v" id="tTotal">—</div>
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <div class="lbl">一整天溫開水</div>
+    <div style="font-size:20px;font-weight:900;color:var(--blue)" id="mWater">—</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:3px">分次喝，醒著的時間都可以喝。奶不等於開水。</div>
+  </div>
+
+  <div class="note" id="stageNote"></div>
+
+  <div class="note">
+    <b>共通原則</b>
+    ・每餐主食與菜類約 1:1，菜類三項可彈性搭配<br>
+    ・兩種以上的食物泥要攪拌在一起吃<br>
+    ・食物泥 ＋ 奶 = 原本一餐的量，未超過 50g 前不用減奶<br>
+    ・每餐 30 分鐘內吃完，開水量要多過一整天食物泥總量
+  </div>
+  </div><!-- /viewTable -->
+
+  <div class="foot">天晴工作坊・晴媽咪食物泥</div>
+</div>
+
+<script>
+/* ═══ 資料區：[起始天, 結束天, [各欄克數], 一日總量] ═══ */
+const DATA = {
+ 1:{age:'約 4 個月',meals:1,water:'50-75 c.c.',days:22,times:['11:30'],
+    set:'1號套餐 1套',next:'第19天可訂購第2階段',
+    cols:['1號主食','1號蔬菜','1號菜1','1號菜2'],
+    rows:[[1,4,[12.5,0,0,0],12.5],[5,8,[12.5,12.5,0,0],25],[9,12,[12.5,0,12.5,0],25],
+          [13,16,[25,12.5,0,12.5],50],[17,20,[25,0,12.5,12.5],50],[21,22,[25,12.5,12.5,0],50]]},
+ 2:{age:'約 5 個月',meals:2,water:'100-200 c.c.',days:16,times:['11:30','15:30'],
+    set:'1號套餐 1套 ＋ 2號套餐 1套',next:'第13天可訂購第3階段',
+    cols:['1號主食','2號主食','1號蔬菜','2號蔬菜','1號菜1','2號菜1','1號菜2','2號菜2'],
+    rows:[[1,4,[25,25,25,0,12.5,0,12.5,0],100],[5,6,[25,25,0,12.5,25,0,12.5,0],100],
+          [7,8,[25,25,0,12.5,12.5,0,25,0],100],[9,10,[25,25,0,12.5,0,12.5,25,0],100],
+          [11,12,[25,25,25,0,0,25,0,0],100],[13,13,[50,25,25,0,25,0,12.5,12.5],150],
+          [14,14,[50,25,0,25,25,0,12.5,12.5],150],[15,16,[50,25,0,25,25,0,0,25],150]]},
+ 3:{age:'約 5 個半月',meals:2,water:'150-200 c.c.',days:16,times:['11:30','15:30'],
+    set:'2號套餐 1套 ＋ 3號套餐 2套',next:'第13天可訂購第4階段',
+    cols:['2號主食','3號主食','2號蔬菜','3號蔬菜','2號菜1','3號菜1','2號菜2','3號菜2'],
+    rows:[[1,4,[50,25,25,0,25,0,25,0],150],[5,8,[25,50,0,25,25,0,25,0],150],
+          [9,10,[25,50,25,25,0,25,25,0],150],[11,12,[25,50,0,25,0,50,0,0],150],
+          [13,16,[25,50,0,25,0,25,0,25],150]]},
+ 4:{age:'約 6 個月',meals:2,water:'250-300 c.c.',days:16,times:['11:30','15:30'],
+    set:'3號套餐 2套 ＋ 4號套餐 2套',next:'第13天可訂購第5階段',
+    cols:['3號主食','4號主食','3號蔬菜','4號蔬菜','3號菜1','4號菜1','3號菜2','4號菜2'],
+    rows:[[1,4,[75,25,25,0,25,0,50,0],200],[5,8,[75,25,25,25,25,0,25,0],200],
+          [9,12,[75,25,25,25,0,25,25,0],200],[13,14,[50,50,0,0,50,0,25,25],200],
+          [15,16,[50,50,0,25,25,0,25,25],200]]},
+ 5:{age:'約 6 個半月',meals:3,water:'350-400 c.c.',days:16,times:['11:30','15:30','19:30'],
+    set:'4號套餐 2套 ＋ 5號套餐 3套',next:'第15天可訂購第6階段',
+    cols:['4號主食','5號主食','4號蔬菜','5號蔬菜','4號菜1','5號菜1','4號菜2','5號菜2'],
+    rows:[[1,4,[100,50,50,0,50,0,50,0],300],[5,8,[100,50,25,25,50,0,50,0],300],
+          [9,12,[100,50,0,50,25,50,25,0],300],[13,13,[100,50,0,50,0,50,0,50],300],
+          [14,14,[0,150,0,50,0,50,0,50],300],[15,15,[0,150,50,0,0,50,0,50],300],
+          [16,16,[0,150,0,25,0,50,0,75],300]]},
+ 6:{age:'約 7 個月',meals:3,water:'400-475 c.c.',days:16,times:['11:30','15:30','19:30'],
+    set:'5號套餐 3套 ＋ 6號套餐 4套',next:'第13天可訂購第7階段',
+    cols:['5號主食','6號主食','5號蔬菜','6號蔬菜','5號菜1','6號菜1','5號菜2','6號菜2'],
+    rows:[[1,4,[125,62.5,62.5,0,62.5,0,62.5,0],375],[5,8,[125,62.5,50,12.5,62.5,0,62.5,0],375],
+          [9,10,[125,62.5,0,62.5,0,62.5,62.5,0],375],[11,11,[125,62.5,12.5,62.5,0,62.5,50,0],375],
+          [12,12,[125,62.5,12.5,62.5,0,112.5,0,0],375],[13,13,[100,87.5,0,62.5,0,62.5,0,62.5],375],
+          [14,16,[0,187.5,0,62.5,0,62.5,0,62.5],375]]},
+ 7:{age:'約 7 個半月',meals:3,water:'500-600 c.c.',days:16,times:['11:30','15:30','19:30'],
+    set:'6號套餐 4套 ＋ 7號套餐 4套',next:'第13天可訂購第8階段',
+    cols:['6號主食','7號主食','6號蔬菜','7號蔬菜','6號菜1','7號菜1','6號菜2','7號菜2'],
+    rows:[[1,4,[150,75,75,0,75,0,75,0],450],[5,8,[150,75,50,25,75,0,75,0],450],
+          [9,10,[125,100,50,25,25,50,75,0],450],[11,11,[125,100,50,25,0,75,75,0],450],
+          [12,12,[125,100,0,75,0,75,75,0],450],[13,14,[125,100,0,75,0,75,25,50],450],
+          [15,16,[125,100,0,75,0,75,0,75],450]]},
+ 8:{age:'約 8 個月',meals:3,water:'700-800 c.c.',days:16,times:['11:30','15:30','19:30'],
+    set:'7號套餐 5套 ＋ 8號套餐 6套',next:'第13天可訂購第9階段',
+    cols:['7號主食','8號主食','7號蔬菜','8號蔬菜','7號菜1','8號菜1','7號菜2','8號菜2'],
+    rows:[[1,4,[200,100,100,0,100,0,100,0],600],[5,5,[200,100,50,50,100,0,100,0],600],
+          [6,8,[150,150,50,50,100,0,100,0],600],[9,12,[150,150,50,75,0,100,75,0],600],
+          [13,16,[150,150,0,100,0,100,0,100],600]]},
+ 9:{age:'約 8 個半月',meals:3,water:'700-800 c.c.',days:16,times:['11:30','15:30','19:30'],
+    set:'8號套餐 5套 ＋ 9號套餐 6套',next:'第14天可訂購第10階段',
+    cols:['8號主食','9號主食','8號蔬菜','9號蔬菜','8號菜1','9號菜1','8號菜2','9號菜2'],
+    rows:[[1,4,[200,100,100,0,100,0,100,0],600],[5,5,[200,100,50,50,100,0,100,0],600],
+          [6,8,[150,150,50,50,100,0,100,0],600],[9,12,[150,150,50,75,0,100,75,0],600],
+          [13,16,[150,150,0,100,0,100,0,100],600]]},
+10:{age:'約 9 個月',meals:4,water:'900-1000 c.c.',days:16,times:['07:30','11:30','15:30','19:30'],
+    set:'9號套餐 7套 ＋ 10號套餐 7套',next:'第13天可訂購第11階段',
+    cols:['9號主食','10號主食','9號蔬菜','10號蔬菜','9號菜1','10號菜1','9號菜2','10號菜2'],
+    rows:[[1,4,[300,100,150,0,125,0,125,0],800],[5,5,[300,100,25,100,125,0,150,0],800],
+          [6,8,[200,200,25,100,125,0,150,0],800],[9,10,[200,200,50,75,50,100,125,0],800],
+          [11,11,[200,200,50,75,50,125,100,0],800],[12,12,[200,200,50,75,0,175,100,0],800],
+          [13,15,[200,200,50,75,0,150,0,125],800],[16,16,[200,200,0,125,0,100,0,175],800]]},
+11:{age:'約 9 個半月',meals:4,water:'1100-1200 c.c.',days:16,times:['07:30','11:30','15:30','19:30'],
+    set:'10號套餐 9套 ＋ 11號套餐 9套',next:'第13天可訂購第12階段或大組數（滿1歲可訂8盒組）',
+    cols:['10號主食','11號主食','10號蔬菜','11號蔬菜','10號菜1','11號菜1','10號菜2','11號菜2'],
+    rows:[[1,2,[300,200,150,0,175,0,175,0],1000],[3,4,[300,200,175,0,175,0,150,0],1000],
+          [5,6,[300,200,100,75,150,0,175,0],1000],[7,8,[300,200,100,75,175,0,150,0],1000],
+          [9,10,[300,200,100,75,0,175,150,0],1000],[11,11,[300,200,100,75,0,200,125,0],1000],
+          [12,12,[300,200,0,175,0,200,125,0],1000],[13,14,[300,200,0,175,0,150,0,175],1000],
+          [15,15,[300,200,0,150,0,150,0,200],1000],[16,16,[0,500,0,150,0,150,0,200],1000]]},
+12:{age:'約 10 個月',meals:4,water:'1100-1200 c.c.',days:16,times:['07:30','11:30','15:30','19:30'],
+    set:'11號套餐 18套',next:'第13天可訂購第12階段或大組數（滿1歲可訂8盒組）',
+    cols:['11號主食','11號蔬菜','11號菜1','11號菜2'],
+    rows:[[1,1,[500,150,175,175],1000],[2,2,[500,175,150,175],1000],[3,3,[500,175,175,150],1000],
+          [4,4,[500,150,175,175],1000],[5,5,[500,175,150,175],1000],[6,6,[500,175,175,150],1000],
+          [7,7,[500,150,175,175],1000],[8,8,[500,175,150,175],1000],[9,9,[500,175,175,150],1000],
+          [10,10,[500,150,175,175],1000],[11,11,[500,175,150,175],1000],[12,12,[500,175,175,150],1000],
+          [13,13,[500,150,175,175],1000],[14,14,[500,175,150,175],1000],[15,15,[500,175,175,150],1000],
+          [16,16,[500,150,175,175],1000]]}
+};
+
+/* ═══════════ 食材 → 套餐號對照 ═══════════ */
+const FOODS = [
+  { cat:'穀類主食',      items:[['胚芽米',1],['米豆',2],['糙薏仁',3]] },
+  { cat:'綠色蔬菜',      items:[['高麗菜',1],['花椰菜',2]] },
+  { cat:'根莖菜類（菜1）', items:[['地瓜',1],['栗子',2],['蓮藕',3]] },
+  { cat:'根莖豆類（菜2）', items:[['紅蘿蔔',1],['馬鈴薯',2],['毛豆',4]] },
+];
+const eaten = new Set();
+
+const fEl = document.getElementById('foods');
+fEl.innerHTML = FOODS.map(gp => `
+  <div class="fgrp">
+    <div class="fttl">${gp.cat}</div>
+    <div class="chips">
+      ${gp.items.map(([n]) => `<button class="chip" data-f="${n}">${n}</button>`).join('')}
+    </div>
+  </div>`).join('');
+
+fEl.querySelectorAll('.chip').forEach(b => {
+  b.onclick = () => {
+    const n = b.dataset.f;
+    eaten.has(n) ? eaten.delete(n) : eaten.add(n);
+    b.classList.toggle('on');
+    suggest();
+  };
+});
+function clearAll(){
+  eaten.clear();
+  fEl.querySelectorAll('.chip').forEach(b => b.classList.remove('on'));
+  suggest();
+}
+
+function suggest(){
+  const all = FOODS.flatMap(g => g.items);
+  const missing = all.filter(([n]) => !eaten.has(n));
+
+  /* 只要某一號有食材沒吃過，就從那一號開始 → 取最小的號 */
+  const lowest = missing.length ? Math.min(...missing.map(([, l]) => l)) : 5;
+  const stage = Math.min(lowest, 12);
+  const s = DATA[stage];
+
+  const missHere = missing.filter(([, l]) => l === lowest).map(([n]) => n);
+  const missLater = missing.filter(([, l]) => l > lowest).map(([n, l]) => `${n}（${l}號）`);
+  const had = all.filter(([n]) => eaten.has(n)).map(([n]) => n);
+
+  document.getElementById('result').innerHTML = `
+    <div class="res">
+      <div class="reshd">
+        <div class="s">建議從這裡開始</div>
+        <div class="b">第 ${stage} 階段</div>
+        <div class="n">${s.set}</div>
+      </div>
+      <div class="resbd">
+        ${missHere.length ? `<div class="rl">因為這些還沒吃過</div>
+          ${missHere.map(n => `<span class="tag">${n}</span>`).join('')}
+          <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.7">
+            都屬於 <b>${lowest} 號</b>，所以要從含 ${lowest} 號的階段開始。</div>`
+        : `<div class="rl">列出的食材都吃過了</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7">
+            可以直接接續後面的階段，若不確定歡迎詢問客服。</div>`}
+
+        <div class="rl" style="margin-top:15px">這個階段怎麼吃</div>
+        <div style="font-size:15px;line-height:1.9">
+          一天 <b>${s.meals}</b> 餐　每餐約 <b>${Math.round(s.rows[0][3] / s.meals)} g</b><br>
+          一整天溫開水 <b>${s.water}</b>
+        </div>
+
+        ${had.length ? `<div class="rl" style="margin-top:14px">已經吃過</div>
+          ${had.map(n => `<span class="tag ok">${n}</span>`).join('')}` : ''}
+        ${missLater.length ? `<div class="rl" style="margin-top:12px">後面還會遇到</div>
+          ${missLater.map(n => `<span class="tag">${n}</span>`).join('')}` : ''}
+
+        <div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;
+                    border-top:1px dashed var(--line);padding-top:10px">
+          每樣新食材前 4 天少量測試，確認沒有過敏反應再增量。<br>
+          本建議僅供參考，實際狀況歡迎詢問客服。
+        </div>
+      </div>
+    </div>
+    <button class="reset" onclick="tab('table');cur=${stage};day=1;render()"
+      style="background:var(--orange);border-color:var(--orange);color:#fff;font-size:14px;padding:12px 0">
+      看第 ${stage} 階段每天怎麼吃 →
+    </button>`;
+}
+
+function tab(which){
+  const f = which === 'find';
+  document.getElementById('viewFind').style.display = f ? '' : 'none';
+  document.getElementById('viewTable').style.display = f ? 'none' : '';
+  document.querySelectorAll('.tb').forEach((b, i) => b.classList.toggle('on', i === (f ? 0 : 1)));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+let cur = 1, day = 1;
+
+const stEl = document.getElementById('stages');
+for (let i = 1; i <= 12; i++) {
+  const b = document.createElement('button');
+  b.className = 'st'; b.textContent = i;
+  b.onclick = () => { cur = i; day = 1; render(); };
+  stEl.appendChild(b);
+}
+const slider = document.getElementById('slider');
+slider.oninput = e => { day = +e.target.value; render(); };
+function step(n){ day = Math.min(DATA[cur].days, Math.max(1, day + n)); render(); }
+function rowFor(s, d){ return s.rows.find(r => d >= r[0] && d <= r[1]); }
+function kindOf(n){ return n.includes('主食') ? '' : n.includes('蔬菜') ? 'v' : n.includes('菜1') ? 'a' : 'b'; }
+function g(n){ return (Math.round(n * 10) / 10).toString(); }
+
+function render(){
+  const s = DATA[cur];
+  document.querySelectorAll('.st').forEach((b,i) => b.classList.toggle('on', i+1 === cur));
+
+  slider.max = s.days;
+  if (day > s.days) day = s.days;
+  slider.value = day;
+  document.getElementById('dNum').textContent = day;
+  document.getElementById('dRange').textContent = '共 ' + s.days + ' 天';
+  document.getElementById('mAge').textContent = s.age;
+  document.getElementById('mMeal').textContent = s.meals + ' 餐';
+  document.getElementById('mWater').textContent = s.water;
+
+  const row = rowFor(s, day), vals = row[2], total = row[3];
+
+  /* 把當日各品項拆成 12.5g 冰磚單位，輪流分配到每一餐 */
+  function allocate(items, meals){
+    const U = 12.5;
+    const pools = items.map(it => ({ name: it.name, n: Math.round(it.g / U) }));
+    const totalUnits = pools.reduce((s, p) => s + p.n, 0);
+    const idx = pools.map(() => 0);
+    const flat = [];
+    while (flat.length < totalUnits) {
+      for (let i = 0; i < pools.length && flat.length < totalUnits; i++) {
+        if (idx[i] < pools[i].n) { flat.push(pools[i].name); idx[i]++; }
+      }
+    }
+    const base = Math.floor(totalUnits / meals), extra = totalUnits % meals;
+    const out = []; let pos = 0;
+    for (let m = 0; m < meals; m++) {
+      const cnt = base + (m < extra ? 1 : 0);
+      const agg = {};
+      flat.slice(pos, pos + cnt).forEach(n => agg[n] = (agg[n] || 0) + U);
+      pos += cnt;
+      out.push(agg);
+    }
+    return out;
+  }
+
+  const staples = [], vegs = [];
+  s.cols.forEach((c, i) => {
+    if (!vals[i]) return;
+    (c.includes('主食') ? staples : vegs).push({ name: c, g: vals[i] });
+  });
+
+  const stapleAlloc = allocate(staples, s.meals);
+  const vegAlloc = vegs.length ? allocate(vegs, s.meals) : null;
+
+  /* 每一餐卡片 */
+  document.getElementById('meals').innerHTML = s.times.map((t, i) => {
+    const st = stapleAlloc[i] || {}, vg = vegAlloc ? vegAlloc[i] : {};
+    const stSum = Object.values(st).reduce((a, b) => a + b, 0);
+    const vgSum = Object.values(vg).reduce((a, b) => a + b, 0);
+    const line = (obj, cls) => Object.entries(obj).map(([n, v]) =>
+      `<div class="mrow ${cls}">
+         <div class="bar"></div>
+         <div class="nm">${n}</div>
+         <div class="g">${g(v)}<span style="font-size:12px"> g</span></div>
+       </div>`).join('');
+    return `<div class="meal">
+      <div class="mhd">
+        <div class="t">第 ${i+1} 餐<small>${t}</small></div>
+        <div class="amt">${g(stSum + vgSum)} g</div>
+      </div>
+      <div class="mbd">
+        <div class="grp">主食　${g(stSum)} g</div>
+        ${line(st, '')}
+        ${vgSum ? `<div class="grp" style="margin-top:9px">菜類　${g(vgSum)} g</div>${line(vg, 'veg')}` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  /* 今日總量明細 */
+  const prev = day > 1 ? rowFor(s, day - 1) : null;
+  document.getElementById('items').innerHTML = s.cols.map((c, i) => {
+    if (!vals[i]) return '';
+    const isNew = prev && !prev[2][i];
+    return `<div class="item ${kindOf(c)}">
+      <div class="nm">${c}</div>
+      ${isNew ? '<span class="new">新增</span>' : ''}
+      <div class="g">${g(vals[i])}<span style="font-size:12px"> g</span></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tTotal').textContent = g(total) + ' g';
+  document.getElementById('stageNote').innerHTML = `<b>第 ${cur} 階段</b>${s.set}<br>※ ${s.next}`;
+}
+render();
+suggest();
+</script>
+</body>
+</html>
