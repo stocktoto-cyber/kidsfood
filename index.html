@@ -283,12 +283,19 @@ const FOODS = [
   { cat:'根莖豆類（菜2）', items:['紅蘿蔔','馬鈴薯','蘋果'] },
 ];
 
-/* ═══════════ 判斷規則：吃過幾種 → 建議階段 ═══════════
-   改門檻只要動這張表。max = 吃過的數量上限（含）       */
+/* ═══════════ 判斷用的兩份清單 ═══════════ */
+// 核心 8 樣 → 判斷第 1 / 第 2 階段
+const CORE = ['胚芽米','高麗菜','地瓜','花椰菜','米豆','栗子','紅蘿蔔','馬鈴薯'];
+// 完整 11 樣 → 判斷第 3 階段
+const FULL = ['胚芽米','米豆','糙薏仁','高麗菜','花椰菜','地瓜','栗子','蓮藕','紅蘿蔔','馬鈴薯','蘋果'];
+
+/* ═══════════ 判斷規則（由上往下比對，第一個符合的生效）═══════════
+   list : 'core' 用 8 樣清單 ／ 'full' 用 11 樣清單
+   min  : 吃過幾種（含）以上就符合                                  */
 const RULES = [
-  { max: 3,        stage: 1, why: '吃過的食材還很少，建議從最基礎的開始' },
-  { max: 7,        stage: 2, why: '已經吃過一些基礎食材，可以進到第 2 階段' },
-  { max: Infinity, stage: 3, why: '大部分基礎食材都吃過了，可以進到第 3 階段' },
+  { list:'full', min:8, stage:3, why:'11 樣基礎食材中已吃過 8 種以上' },
+  { list:'core', min:4, stage:2, why:'8 樣核心食材中已吃過 4 種以上' },
+  { list:'core', min:0, stage:1, why:'吃過的核心食材還不多，建議從最基礎的開始' },
 ];
 
 const eaten = new Set();
@@ -320,16 +327,20 @@ function suggest(){
   const all = FOODS.flatMap(g => g.items);
   const had = all.filter(n => eaten.has(n));
   const missing = all.filter(n => !eaten.has(n));
-  const cnt = had.length;
 
-  const rule = RULES.find(r => cnt <= r.max);
+  const coreCnt = CORE.filter(n => eaten.has(n)).length;
+  const fullCnt = FULL.filter(n => eaten.has(n)).length;
+
+  const rule = RULES.find(r => (r.list === 'core' ? coreCnt : fullCnt) >= r.min);
   const stage = rule.stage;
   const s = DATA[stage];
+  const cnt = rule.list === 'core' ? coreCnt : fullCnt;
+  const denom = rule.list === 'core' ? CORE.length : FULL.length;
 
   document.getElementById('result').innerHTML = `
     <div class="res">
       <div class="reshd">
-        <div class="s">吃過 ${cnt} / ${all.length} 種，建議從這裡開始</div>
+        <div class="s">吃過 ${cnt} / ${denom} 種，建議從這裡開始</div>
         <div class="b">第 ${stage} 階段</div>
         <div class="n">${s.set}</div>
       </div>
