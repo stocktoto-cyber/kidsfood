@@ -347,6 +347,22 @@ function suggest(){
       <div class="resbd">
         <div style="font-size:14px;color:var(--text);line-height:1.8">${rule.why}。</div>
 
+        ${stage === 1 ? `
+        <a href="https://www.kidsfood.com.tw/products/1-5" target="_blank"
+           style="display:block;text-decoration:none;background:#FFF6EC;border:1px solid #F0D9BE;
+                  border-radius:11px;padding:15px 17px;margin-top:14px">
+          <div style="font-size:15px;font-weight:900;color:#B4622F;line-height:1.6">
+            或購買「收涎餐」更優惠
+          </div>
+          <div style="font-size:13px;color:#8A6742;line-height:1.75;margin-top:4px">
+            收涎餐＝第 1 階段 ＋ 第 2 階段（共 18 盒），
+            一次備齊前兩階段，不用中途補訂。
+          </div>
+          <div style="font-size:13px;font-weight:700;color:#CE7448;margin-top:8px">
+            看收涎餐 →
+          </div>
+        </a>` : ''}
+
         <div class="rl" style="margin-top:15px">這個階段怎麼吃</div>
         <div style="font-size:15px;line-height:1.9">
           一天 <b>${s.meals}</b> 餐　每餐約 <b>${Math.round(s.rows[0][3] / s.meals)} g</b><br>
