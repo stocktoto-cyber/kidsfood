@@ -27,9 +27,19 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);co
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
 .lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.08em;margin-bottom:10px}
 
-.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .st{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 0;font-size:15px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
 .st.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.st.big{grid-column:span 2;font-size:13px;color:var(--gold);border-color:#EFDCB4;background:var(--gold-lt)}
+.st.big.on{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── 加熱步驟 ── */
+.hstep{display:flex;gap:12px;padding:12px 0}
+.hstep+.hstep{border-top:1px dashed #EFE7DC}
+.hn{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.hc{flex:1}
+.ht{font-size:15px;font-weight:700;line-height:1.6}
+.hd{font-size:13px;color:var(--muted);line-height:1.85;margin-top:3px}
 
 .dayhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
 .daynum{font-size:26px;font-weight:900;color:var(--orange)}
@@ -61,10 +71,18 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .mrow{display:flex;align-items:center;gap:10px;padding:6px 0}
 .mrow+.mrow{border-top:1px dashed #EFE7DC}
 .mrow .bar{width:5px;height:26px;border-radius:3px;background:var(--orange)}
+.mrow.v .bar{background:var(--green)}
+.mrow.a .bar{background:var(--gold)}
+.mrow.b .bar{background:var(--blue)}
+.mrow.c .bar{background:#B07CC6}
 .mrow.veg .bar{background:var(--green)}
 .mrow .nm{flex:1;font-size:15px;font-weight:700}
 .mrow .nm small{display:block;font-size:12px;font-weight:500;color:var(--muted);line-height:1.5}
 .mrow .g{font-size:18px;font-weight:900;color:var(--orange)}
+.mrow.v .g{color:var(--green)}
+.mrow.a .g{color:var(--gold)}
+.mrow.b .g{color:var(--blue)}
+.mrow.c .g{color:#9A5FB0}
 .mrow.veg .g{color:var(--green)}
 
 /* ── 今日總表 ── */
@@ -72,6 +90,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .item.v{border-left-color:var(--green)}
 .item.a{border-left-color:var(--gold)}
 .item.b{border-left-color:var(--blue)}
+.item.c{border-left-color:#B07CC6}
 .item .nm{flex:1;font-size:15px;font-weight:700}
 .item .g{font-size:17px;font-weight:900;color:var(--orange)}
 .item.v .g{color:var(--green)} .item.a .g{color:var(--gold)} .item.b .g{color:var(--blue)}
@@ -83,7 +102,8 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 
 /* ── 頁籤 ── */
 .tabs{display:flex;gap:8px;margin-bottom:14px}
-.tb{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 0;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;transition:.15s}
+.tb{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 4px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
+@media(max-width:400px){.tabs{gap:5px}.tb{font-size:12px;padding:10px 2px}}
 .tb.on{background:var(--orange);border-color:var(--orange);color:#fff}
 
 /* ── 食材勾選 ── */
@@ -121,8 +141,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
   </div>
 
   <div class="tabs">
-    <button class="tb on" onclick="tab('find')">我該從哪階段開始</button>
+    <button class="tb on" onclick="tab('find')">哪個階段</button>
     <button class="tb" onclick="tab('table')">吃法對照</button>
+    <button class="tb" onclick="tab('heat')">🔥 加熱方式</button>
   </div>
 
   <!-- ══ 推薦階段 ══ -->
@@ -142,7 +163,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
     <div class="stages" id="stages"></div>
   </div>
 
-  <div class="panel">
+  <div id="bigBox" style="display:none"></div>
+
+  <div class="panel" id="dayPanel">
     <div class="dayhead">
       <div class="daynum">第 <span id="dNum">1</span> 天</div>
       <div class="hint" id="dRange"></div>
@@ -154,28 +177,74 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
     </div>
   </div>
 
-  <div class="meta">
+  <div class="meta" id="metaBox">
     <div class="mbox"><div class="k">寶寶月齡</div><div class="v" id="mAge">—</div></div>
     <div class="mbox"><div class="k">一天餐數</div><div class="v" id="mMeal">—</div></div>
   </div>
 
-  <div class="sect">每一餐這樣吃</div>
+  <div class="sect" id="sectMeal">每一餐這樣吃</div>
   <div id="meals"></div>
 
-  <div class="sect" style="margin-top:20px">今日食材總量</div>
+  <div class="sect" id="sectItem" style="margin-top:20px">今日食材總量</div>
   <div id="items"></div>
-  <div class="total">
+  <div class="total" id="totalBox">
     <div class="k">一日食物泥總量</div>
     <div class="v" id="tTotal">—</div>
   </div>
 
-  <div class="panel" style="margin-top:16px">
+  <div class="panel" id="waterPanel" style="margin-top:16px">
     <div class="lbl">一整天溫開水</div>
     <div style="font-size:20px;font-weight:900;color:var(--blue)" id="mWater">—</div>
     <div style="font-size:12px;color:var(--muted);margin-top:3px">分次喝，醒著的時間都可以喝。奶不等於開水。</div>
   </div>
 
   <div class="note" id="stageNote"></div>
+
+  </div><!-- /viewTable -->
+
+  <!-- ══ 加熱方式（獨立頁籤）══ -->
+  <div id="viewHeat" style="display:none">
+  <!-- ══ 加熱方式 ══ -->
+  <div class="panel" style="margin-top:16px">
+    <div class="lbl">🔥 食用方式</div>
+
+    <div class="hstep">
+      <div class="hn">1</div>
+      <div class="hc">
+        <div class="ht">將食物泥折成 6 份再拆開封模</div>
+        <div class="hd">
+          ・將剩餘冰磚放入保鮮盒保存，要吃時再取出<br>
+          ・撥掉冰磚上因溫度變化形成的水珠，以免食物泥變稀<br>
+          ・前一晚可將隔天要吃的食物泥放在碗中，冷藏解凍
+        </div>
+      </div>
+    </div>
+
+    <div class="hstep">
+      <div class="hn">2</div>
+      <div class="hc">
+        <div class="ht">電鍋加熱</div>
+        <div class="hd">
+          ・已解凍：外鍋約 1/3 - 1/2 杯水<br>
+          　（食物泥量多時，內鍋水量可增加 1/2 杯）<br>
+          ・冷凍狀態：外鍋約 1/2 - 1 杯水
+        </div>
+        <div class="ht" style="margin-top:9px">微波加熱</div>
+        <div class="hd">
+          ・隨食物泥量增加時間<br>
+          ・每台功率不同，可 10-20 秒多次測試，以免噴濺
+        </div>
+      </div>
+    </div>
+
+    <div class="hstep">
+      <div class="hn">3</div>
+      <div class="hc">
+        <div class="ht">電鍋跳起後不開蓋，燜 10-15 分鐘</div>
+        <div class="hd">取出待冷卻後即可食用</div>
+      </div>
+    </div>
+  </div>
 
   <div class="note">
     <b>共通原則</b>
@@ -184,7 +253,16 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
     ・食物泥 ＋ 奶 = 原本一餐的量，未超過 50g 前不用減奶<br>
     ・每餐 30 分鐘內吃完，開水量要多過一整天食物泥總量
   </div>
-  </div><!-- /viewTable -->
+
+    <div class="note">
+      <b>常見問題</b>
+      ・冰磚不用完全退冰也可以直接蒸，只是外鍋水要多放一點<br>
+      ・加熱後如果太稠，可以加一點溫開水調整<br>
+      ・一次只加熱這一餐的量，不要重複加熱<br>
+      ・冰磚要放冷凍保存，不要放冷藏過夜以外的時間
+    </div>
+  </div>
+
 
   <div class="foot">天晴工作坊・晴媽咪食物泥</div>
 </div>
@@ -264,15 +342,114 @@ const DATA = {
           [9,10,[300,200,100,75,0,175,150,0],1000],[11,11,[300,200,100,75,0,200,125,0],1000],
           [12,12,[300,200,0,175,0,200,125,0],1000],[13,14,[300,200,0,175,0,150,0,175],1000],
           [15,15,[300,200,0,150,0,150,0,200],1000],[16,16,[0,500,0,150,0,150,0,200],1000]]},
-12:{age:'約 10 個月',meals:4,water:'1100-1200 c.c.',days:16,times:['07:30','11:30','15:30','19:30'],
-    set:'11號套餐 18套',next:'第13天可訂購第12階段或大組數（滿1歲可訂8盒組）',
-    cols:['11號主食','11號蔬菜','11號菜1','11號菜2'],
-    rows:[[1,1,[500,150,175,175],1000],[2,2,[500,175,150,175],1000],[3,3,[500,175,175,150],1000],
-          [4,4,[500,150,175,175],1000],[5,5,[500,175,150,175],1000],[6,6,[500,175,175,150],1000],
-          [7,7,[500,150,175,175],1000],[8,8,[500,175,150,175],1000],[9,9,[500,175,175,150],1000],
-          [10,10,[500,150,175,175],1000],[11,11,[500,175,150,175],1000],[12,12,[500,175,175,150],1000],
-          [13,13,[500,150,175,175],1000],[14,14,[500,175,150,175],1000],[15,15,[500,175,175,150],1000],
-          [16,16,[500,150,175,175],1000]]}
+12:{type:'fixed',age:'約 10 個月',set:'11號餐 × 18（可吃 16 天）',days:16,
+    water:'1100-1200 c.c.',perMeal:250,dayTotal:1000,variety:'每餐 40 多種食材',
+    formula:'250g 食物泥 ＝ 125g 主食 ＋ 125g 三大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':125,'蔬菜':50,'菜1':50,'菜2':25}},
+      {time:'11:30',items:{'主食':125,'蔬菜':50,'菜1':25,'菜2':50}},
+      {time:'15:30',items:{'主食':125,'蔬菜':25,'菜1':50,'菜2':50}},
+      {time:'19:30',items:{'主食':125,'蔬菜':25,'菜1':50,'菜2':50}}],
+    tips:['一整天主食共 500g（不要減量）','菜類依照範例搭配','3 大菜類輪替，但整天營養是均衡的'],
+    next:'第 13 天訂購下個階段'},
+
+13:{type:'fixed',age:'約 10 個半月',set:'11號餐 × 18（可吃 16 天）',days:16,
+    water:'1100-1200 c.c.',perMeal:250,dayTotal:1000,variety:'每餐 40 多種食材',
+    formula:'250g 食物泥 ＝ 125g 主食 ＋ 125g 三大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':125,'蔬菜':50,'菜1':50,'菜2':25}},
+      {time:'11:30',items:{'主食':125,'蔬菜':50,'菜1':25,'菜2':50}},
+      {time:'15:30',items:{'主食':125,'蔬菜':25,'菜1':50,'菜2':50}},
+      {time:'19:30',items:{'主食':125,'蔬菜':25,'菜1':50,'菜2':50}}],
+    tips:['一整天主食共 500g（不要減量）','菜類依照範例搭配','3 大菜類輪替，但整天營養是均衡的'],
+    next:'第 13 天訂購下個階段'},
+
+14:{type:'fixed',age:'約 11 個月',set:'11號餐 × 18（可吃 16 天）',days:16,
+    water:'1200-1300 c.c.',perMeal:275,dayTotal:1100,variety:'每餐 40 多種食材',
+    formula:'275g ＝ 150g主食＋125g菜類　或　125g主食＋150g菜類',
+    meals:[
+      {time:'07:30',items:{'主食':125,'蔬菜':50,'菜1':50,'菜2':50}},
+      {time:'11:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':50}},
+      {time:'15:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25}}],
+    tips:['一整天主食共 550g（不要減量）','主食 125g 時，3 種菜類各 2 顆','主食 150g 時，3 種菜類有 2 種×2顆 ＋ 1 種×1顆','每餐輪替各大類，讓一整天營養均衡'],
+    next:'第 13 天訂購下個階段'},
+
+15:{type:'fixed',age:'約 11 個半月',set:'11號餐 × 18（可吃 16 天）',days:16,
+    water:'1200-1300 c.c.',perMeal:275,dayTotal:1100,variety:'每餐 40 多種食材',
+    formula:'275g ＝ 150g主食＋125g菜類　或　125g主食＋150g菜類',
+    meals:[
+      {time:'07:30',items:{'主食':125,'蔬菜':50,'菜1':50,'菜2':50}},
+      {time:'11:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':50}},
+      {time:'15:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25}}],
+    tips:['一整天主食共 550g（不要減量）','主食 125g 時，3 種菜類各 2 顆','主食 150g 時，3 種菜類有 2 種×2顆 ＋ 1 種×1顆','每餐輪替各大類，讓一整天營養均衡'],
+    next:'第 13 天訂購下個階段'},
+
+16:{type:'fixed',age:'一歲以上',set:'11號套餐 ＋ 8號菜3（可吃 15 天）',days:15,
+    water:'1200-1400 c.c.',perMeal:300,dayTotal:1200,variety:'每餐 50 多種食材',
+    formula:'300g 食物泥 ＝ 150g 主食 ＋ 150g 四大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25,'菜3':25}},
+      {time:'11:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50,'菜3':25}},
+      {time:'15:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':25,'菜3':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':25,'菜1':25,'菜2':50,'菜3':50}}],
+    tips:['主食是腦部發育的重要營養，不要改為營養價值低的粥','加入[菜3]南瓜堅果類，攝取更多食材營養','4 大菜類各 1-2 顆，輪替讓一整天平均吃','一天四餐足量，才能確保銜接固體不挑偏食'],
+    next:'第 13 天訂購下個階段'},
+
+17:{type:'fixed',age:'一歲以上',set:'11號套餐 ＋ 9號菜3（可吃 15 天）',days:15,
+    water:'1200-1400 c.c.',perMeal:300,dayTotal:1200,variety:'每餐 50 多種食材',
+    formula:'300g 食物泥 ＝ 150g 主食 ＋ 150g 四大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25,'菜3':25}},
+      {time:'11:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50,'菜3':25}},
+      {time:'15:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':25,'菜3':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':25,'菜1':25,'菜2':50,'菜3':50}}],
+    tips:['主食是腦部發育的重要營養，不要改為營養價值低的粥','加入[菜3]南瓜堅果類，攝取更多食材營養','4 大菜類各 1-2 顆，輪替讓一整天平均吃','一天四餐足量，才能確保銜接固體不挑偏食'],
+    next:'第 13 天訂購下個階段'},
+
+18:{type:'fixed',age:'一歲以上',set:'11號套餐 ＋ 10號菜3（可吃 15 天）',days:15,
+    water:'1300-1400 c.c.',perMeal:300,dayTotal:1200,variety:'每餐 50 多種食材',
+    formula:'300g 食物泥 ＝ 150g 主食 ＋ 150g 四大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25,'菜3':25}},
+      {time:'11:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50,'菜3':25}},
+      {time:'15:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':25,'菜3':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':25,'菜1':25,'菜2':50,'菜3':50}}],
+    tips:['主食是腦部發育的重要營養，不要改為營養價值低的粥','加入[菜3]南瓜堅果類，攝取更多食材營養','4 大菜類各 1-2 顆，輪替讓一整天平均吃','一整天開水要喝超過一整天食物泥總量'],
+    next:'第 13 天訂購下個階段'},
+
+19:{type:'fixed',age:'一歲以上',set:'11號套餐 ＋ 11號菜3（可吃 15 天）',days:15,
+    water:'1300-1400 c.c.',perMeal:300,dayTotal:1200,variety:'每餐 50 多種食材',
+    formula:'300g 食物泥 ＝ 150g 主食 ＋ 150g 四大菜類總和',
+    meals:[
+      {time:'07:30',items:{'主食':150,'蔬菜':50,'菜1':50,'菜2':25,'菜3':25}},
+      {time:'11:30',items:{'主食':150,'蔬菜':50,'菜1':25,'菜2':50,'菜3':25}},
+      {time:'15:30',items:{'主食':150,'蔬菜':25,'菜1':50,'菜2':25,'菜3':50}},
+      {time:'19:30',items:{'主食':150,'蔬菜':25,'菜1':25,'菜2':50,'菜3':50}}],
+    tips:['主食是腦部發育的重要營養，不要改為營養價值低的粥','加入[菜3]南瓜堅果類，攝取更多食材營養','4 大菜類各 1-2 顆，輪替讓一整天平均吃','一整天開水要喝超過一整天食物泥總量'],
+    next:'第 13 天訂購下個階段'},
+
+20:{type:'portion',age:'一歲以上',set:'11號套餐（8盒組）× 15',
+    water:'開水要喝超過一整天食物泥總量',variety:'每餐 50 多種食材',
+    note:'一天 4 餐，每餐 350g 以上',
+    options:[350,400,450,500,550,600],
+    tips:['食材多元、營養均衡，不需要改吃營養價值低的粥品','食物泥可以吃到 1 歲 10 個月～2 歲，之後中晚餐銜接固體','食物泥吃完喝奶、適量手指食物，一餐 30 分鐘結束','早餐可持續吃食物泥，因為沒有任何早餐比食物泥營養均衡'],
+    next:'第 13 天訂購下個階段'}
+};
+
+/* ═══════════ 大組數（一歲以上）═══════════ */
+const BIG = {
+  age:'一歲以上',
+  set:'11號套餐（8盒組）× 10　或　× 15',
+  water:'開水要喝超過一整天食物泥總量',
+  variety:'每餐 50 多種食材',
+  note:'一天 4 餐，每餐 350g 以上',
+  options:[350,400,450,500,550,600],
+  tips:['食材多元、營養均衡，不需要改吃營養價值低的粥品',
+        '食物泥可以吃到 1 歲 10 個月～2 歲，之後中晚餐銜接固體',
+        '食物泥吃完喝奶、適量手指食物，一餐 30 分鐘結束',
+        '早餐可持續吃食物泥，因為沒有任何早餐比食物泥營養均衡'],
 };
 
 /* ═══════════ 食材清單 ═══════════ */
@@ -388,33 +565,129 @@ function suggest(){
 }
 
 function tab(which){
-  const f = which === 'find';
-  document.getElementById('viewFind').style.display = f ? '' : 'none';
-  document.getElementById('viewTable').style.display = f ? 'none' : '';
-  document.querySelectorAll('.tb').forEach((b, i) => b.classList.toggle('on', i === (f ? 0 : 1)));
+  const views = { find:'viewFind', table:'viewTable', heat:'viewHeat' };
+  Object.entries(views).forEach(([k,id]) => {
+    const e = document.getElementById(id);
+    if (e) e.style.display = (k === which) ? '' : 'none';
+  });
+  const order = ['find','table','heat'];
+  document.querySelectorAll('.tb').forEach((b,i) =>
+    b.classList.toggle('on', order[i] === which));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 let cur = 1, day = 1;
 
 const stEl = document.getElementById('stages');
-for (let i = 1; i <= 12; i++) {
+for (let i = 1; i <= 20; i++) {
   const b = document.createElement('button');
   b.className = 'st'; b.textContent = i;
   b.onclick = () => { cur = i; day = 1; render(); };
   stEl.appendChild(b);
 }
+const bigBtn = document.createElement('button');
+bigBtn.className = 'st big'; bigBtn.textContent = '大組數';
+bigBtn.onclick = () => { cur = 'big'; render(); };
+stEl.appendChild(bigBtn);
 const slider = document.getElementById('slider');
 slider.oninput = e => { day = +e.target.value; render(); };
-function step(n){ day = Math.min(DATA[cur].days, Math.max(1, day + n)); render(); }
+function step(n){ const d=DATA[cur]; if(!d||!d.rows) return; day = Math.min(d.days, Math.max(1, day + n)); render(); }
 function rowFor(s, d){ return s.rows.find(r => d >= r[0] && d <= r[1]); }
 function kindOf(n){ return n.includes('主食') ? '' : n.includes('蔬菜') ? 'v' : n.includes('菜1') ? 'a' : 'b'; }
 function g(n){ return (Math.round(n * 10) / 10).toString(); }
 
-function render(){
-  const s = DATA[cur];
-  document.querySelectorAll('.st').forEach((b,i) => b.classList.toggle('on', i+1 === cur));
+const HIDE = ['dayPanel','metaBox','sectMeal','meals','sectItem','items','totalBox','waterPanel','stageNote'];
+function showMain(on){ HIDE.forEach(id => { const e=document.getElementById(id); if(e) e.style.display = on ? '' : 'none'; }); }
+function kcls(n){ return n.includes('主食')?'':n.includes('蔬菜')?'v':n.includes('菜1')?'a':n.includes('菜2')?'b':'c'; }
 
+/* ── 固定搭配（第 12-19 階段）── */
+function renderFixed(s){
+  showMain(false);
+  const box = document.getElementById('bigBox');
+  box.style.display = '';
+  const mealHtml = s.meals.map((m,i) => {
+    const tot = Object.values(m.items).reduce((a,b)=>a+b,0);
+    return `<div class="meal">
+      <div class="mhd">
+        <div class="t">第 ${i+1} 餐<small>${m.time}</small></div>
+        <div class="amt">${tot} g</div>
+      </div>
+      <div class="mbd">
+        ${Object.entries(m.items).map(([k,v]) =>
+          `<div class="mrow ${kcls(k)}"><div class="bar"></div>
+             <div class="nm">${k}</div>
+             <div class="g">${v}<span style="font-size:12px"> g</span></div></div>`).join('')}
+      </div></div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="meta">
+      <div class="mbox"><div class="k">寶寶月齡</div><div class="v">${s.age}</div></div>
+      <div class="mbox"><div class="k">一天餐數</div><div class="v">${s.meals.length} 餐</div></div>
+    </div>
+    <div class="panel" style="text-align:center;background:var(--orange-lt);border-color:#EEDFD1">
+      <div style="font-size:13px;color:#A5562F;font-weight:700">${s.variety}</div>
+      <div style="font-size:16px;font-weight:900;color:var(--orange);margin-top:6px;line-height:1.7">${s.formula}</div>
+      <div style="font-size:13px;color:#8A6742;margin-top:6px">一天總量 ${s.dayTotal}g</div>
+    </div>
+    <div class="sect">每一餐這樣吃</div>
+    ${mealHtml}
+    <div class="panel" style="margin-top:14px">
+      <div class="lbl">一整天溫開水</div>
+      <div style="font-size:20px;font-weight:900;color:var(--blue)">${s.water}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">分次喝，醒著的時間都可以喝。奶不等於開水。</div>
+    </div>
+    <div class="note"><b>TIPS</b>${s.tips.map(t=>'・'+t).join('<br>')}</div>
+    <div class="note"><b>第 ${cur} 階段</b>${s.set}<br>※ ${s.next}</div>`;
+}
+
+/* ── 份量對照（第 20 階段／大組數）── */
+function renderPortion(s, title, sub){
+  showMain(false);
+  const box = document.getElementById('bigBox');
+  box.style.display = '';
+  box.innerHTML = `
+    <div class="res" style="margin-bottom:14px">
+      <div class="reshd" style="background:var(--gold)">
+        <div class="s">${sub}</div>
+        <div class="b" style="font-size:24px">${title}</div>
+        <div class="n">${s.set}</div>
+      </div>
+      <div class="resbd">
+        <div style="font-size:15px;font-weight:700;text-align:center;line-height:1.8">${s.note}</div>
+        <div style="font-size:13px;color:var(--muted);text-align:center;margin-top:2px">${s.variety}</div>
+      </div>
+    </div>
+    <div class="sect">每餐份量對照</div>
+    ${s.options.map(o => `
+      <div class="item" style="border-left-color:var(--gold)">
+        <div class="nm">${o} g 食物泥</div>
+        <div style="font-size:14px;color:var(--muted);text-align:right;line-height:1.5">
+          主食 <b style="color:var(--gold)">${o/2}</b>g<br>
+          四大菜類 <b style="color:var(--green)">${o/2}</b>g
+        </div>
+      </div>`).join('')}
+    <div class="panel" style="margin-top:14px">
+      <div class="lbl">開水</div>
+      <div style="font-size:16px;font-weight:700;color:var(--blue);line-height:1.7">💧 ${s.water}</div>
+    </div>
+    <div class="note"><b>TIPS</b>${s.tips.map(t=>'・'+t).join('<br>')}</div>`;
+}
+
+function render(){
+  document.querySelectorAll('.st').forEach(b => b.classList.remove('on'));
+  if (cur === 'big') {
+    document.querySelector('.st.big').classList.add('on');
+    return renderPortion(BIG, '大組數', BIG.age);
+  }
+  document.querySelectorAll('.st')[cur-1].classList.add('on');
+
+  const s = DATA[cur];
+  if (s.type === 'fixed')   return renderFixed(s);
+  if (s.type === 'portion') return renderPortion(s, '第 20 階段', s.age);
+
+  showMain(true);
+  document.getElementById('bigBox').style.display = 'none';
   slider.max = s.days;
   if (day > s.days) day = s.days;
   slider.value = day;
