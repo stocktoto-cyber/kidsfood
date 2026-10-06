@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天晴特殊營養餐｜怎麼吃</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FBF8F3; --card:#FFF; --line:#E2D8CB;
+  --text:#231F1C; --muted:#6B6259;
+  --orange:#C2622F; --orange-lt:#FDF1E6;
+  --green:#4C7D54; --green-lt:#EBF3EC;
+  --gold:#A8761E; --gold-lt:#FFF8E8;
+  --red:#A63A2B; --red-lt:#FDEEEB;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Noto Sans TC',-apple-system,sans-serif;
+  background:var(--bg); color:var(--text);
+  font-size:18px; line-height:1.9;
+  padding:26px 16px 70px;
+}
+.wrap{max-width:620px;margin:0 auto}
+
+/* ── 標題 ── */
+.hero{background:var(--orange);border-radius:var(--r);padding:30px 24px;text-align:center;color:#fff;margin-bottom:26px}
+.hero h1{font-size:28px;font-weight:900;letter-spacing:.02em;line-height:1.5}
+.hero p{font-size:17px;opacity:.95;margin-top:6px}
+
+h2{
+  font-size:22px;font-weight:900;color:var(--orange);
+  margin:34px 0 14px;display:flex;align-items:center;gap:10px;line-height:1.5;
+}
+h2 .n{
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;
+  background:var(--orange);color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px}
+.card+.card{margin-top:12px}
+
+/* ── 時機 ── */
+.when{display:flex;gap:14px;align-items:flex-start;padding:14px 0}
+.when+.when{border-top:1px solid #F0E9E0}
+.when .ic{font-size:26px;flex-shrink:0;line-height:1.5}
+.when .t{font-size:19px;font-weight:700}
+.when .d{font-size:16px;color:var(--muted);line-height:1.8}
+
+/* ── 份量卡 ── */
+.plan{border-radius:var(--r);overflow:hidden;border:2px solid var(--line);margin-bottom:14px}
+.plan .ph{padding:14px 22px;font-size:19px;font-weight:900;color:#fff}
+.plan.base .ph{background:var(--green)}
+.plan.plus .ph{background:var(--orange)}
+.plan .pb{background:#fff;padding:20px 22px}
+.plan .amt{font-size:34px;font-weight:900;line-height:1.3}
+.plan.base .amt{color:var(--green)}
+.plan.plus .amt{color:var(--orange)}
+.plan .amt small{font-size:19px;font-weight:700}
+.plan .dt{font-size:16px;color:var(--muted);margin-top:8px;line-height:1.8}
+.plan .tag{
+  display:inline-block;margin-top:10px;background:var(--gold-lt);
+  border:1px solid #EBD9AE;color:#7A5712;
+  font-size:15px;font-weight:700;padding:5px 13px;border-radius:20px;
+}
+
+/* ── 提示條 ── */
+.hint{
+  background:var(--green-lt);border:1px solid #CBDFCE;border-radius:var(--r);
+  padding:18px 22px;font-size:17px;color:#2F5A37;line-height:1.85;margin-top:14px;
+}
+.hint b{color:#24492B}
+
+/* ── 注意事項 ── */
+.warn{background:var(--red-lt);border:2px solid #E8BFB6;border-radius:var(--r);padding:22px 24px}
+.wrow{display:flex;gap:13px;padding:13px 0;align-items:flex-start}
+.wrow+.wrow{border-top:1px solid #F0D5CE}
+.wrow .dot{
+  flex-shrink:0;width:9px;height:9px;border-radius:50%;
+  background:var(--red);margin-top:12px;
+}
+.wrow .wt{font-size:18px;font-weight:700;color:#8C2F22;line-height:1.75}
+.wrow .wd{font-size:16px;color:#7A5248;line-height:1.8;margin-top:3px}
+
+/* ── 影片按鈕 ── */
+.vid{
+  display:flex;align-items:center;gap:14px;text-decoration:none;
+  background:#fff;border:2px solid var(--orange);border-radius:var(--r);
+  padding:18px 22px;margin-top:14px;
+}
+.vid .play{
+  flex-shrink:0;width:46px;height:46px;border-radius:50%;
+  background:var(--orange);color:#fff;font-size:19px;
+  display:flex;align-items:center;justify-content:center;
+}
+.vid .vt{font-size:18px;font-weight:900;color:var(--orange);line-height:1.5}
+.vid .vd{font-size:15px;color:var(--muted)}
+
+.foot{text-align:center;margin-top:40px;font-size:15px;color:var(--muted);letter-spacing:.05em}
+
+/* ── 列印 ── */
+@media print{
+  body{background:#fff;padding:0;font-size:13pt}
+  .hero{background:#fff !important;color:var(--text);border:2px solid var(--orange)}
+  .hero h1{color:var(--orange)}
+  .hero p{color:var(--muted)}
+  .plan .ph{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .vid{display:none}
+  h2{page-break-after:avoid}
+  .plan,.warn,.card{page-break-inside:avoid}
+}
+
+@media(max-width:420px){
+  body{font-size:17px;padding:20px 13px 50px}
+  .hero h1{font-size:23px}
+  h2{font-size:20px}
+  .plan .amt{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>🌾 天晴特殊營養餐</h1>
+    <p>怎麼吃・吃多少・要注意什麼</p>
+  </div>
+
+  <!-- ══ 1 什麼時候吃 ══ -->
+  <h2><span class="n">1</span>什麼時候吃</h2>
+  <div class="card">
+    <div class="when">
+      <div class="ic">🌅</div>
+      <div><div class="t">當早餐</div>
+      <div class="d">一天的營養從這裡開始</div></div>
+    </div>
+    <div class="when">
+      <div class="ic">🥄</div>
+      <div><div class="t">當點心</div>
+      <div class="d">兩餐之間補充，不會有負擔</div></div>
+    </div>
+    <div class="when">
+      <div class="ic">🏥</div>
+      <div><div class="t">當正餐</div>
+      <div class="d">不好咀嚼吞嚥的人，或管餵、復健中的人，<br>可以直接當成正餐食用</div></div>
+    </div>
+  </div>
+
+  <!-- ══ 2 吃多少 ══ -->
+  <h2><span class="n">2</span>吃多少</h2>
+
+  <div class="hint" style="margin-top:0;margin-bottom:14px">
+    <b>先從少量開始，習慣了再慢慢增加。</b><br>
+    不用一開始就吃到建議量，身體適應最重要。
+  </div>
+
+  <a class="vid" href="https://youtu.be/oywI5Qb4KBY" target="_blank" rel="noopener"
+     style="margin-top:0;margin-bottom:18px">
+    <div class="play">▶</div>
+    <div>
+      <div class="vt">剛開始吃食物泥該怎麼吃</div>
+      <div class="vd">點我看影片說明</div>
+    </div>
+  </a>
+
+  <div style="font-size:19px;font-weight:900;margin:22px 0 12px;color:var(--text)">🌾 食物泥</div>
+
+  <div class="plan base">
+    <div class="ph">基礎保養</div>
+    <div class="pb">
+      <div class="amt">每次 200<small> g</small></div>
+      <div class="dt">主食 100g ＋ 四大類食材各 25g</div>
+      <div class="tag">約 50 多種食材營養</div>
+    </div>
+  </div>
+
+  <div class="plan plus">
+    <div class="ph">營養加倍</div>
+    <div class="pb">
+      <div class="amt">每次 400<small> g</small></div>
+      <div class="dt">主食 200g ＋ 四大類食材各 50g</div>
+      <div class="tag">約 50 多種食材營養</div>
+    </div>
+  </div>
+
+  <div style="font-size:19px;font-weight:900;margin:28px 0 12px;color:var(--text)">🥤 蔬果昔</div>
+
+  <div class="plan base">
+    <div class="ph">基礎保養</div>
+    <div class="pb">
+      <div class="amt">每次 1 盒　<small>共 150 g</small></div>
+      <div class="tag">一盒約 15-18 種食材營養</div>
+    </div>
+  </div>
+
+  <div class="plan plus">
+    <div class="ph">營養加倍</div>
+    <div class="pb">
+      <div class="amt">每次 2 盒　<small>共 300 g</small></div>
+      <div class="dt">兩盒可以選不同口味</div>
+    </div>
+  </div>
+
+  <!-- ══ 3 注意事項 ══ -->
+  <h2><span class="n">3</span>注意事項</h2>
+
+  <div class="hint" style="margin-top:0;margin-bottom:14px">
+    <b>食物泥與蔬果昔可以交替食用</b>，換換口味。<br>
+    建議長期持續食用，作為每日的營養補充。
+  </div>
+
+  <div class="warn">
+    <div class="wrow">
+      <div class="dot"></div>
+      <div>
+        <div class="wt">冰磚退冰的水，請勿倒掉</div>
+        <div class="wd">那些水也是營養，必須跟食物泥一起加熱。</div>
+      </div>
+    </div>
+    <div class="wrow">
+      <div class="dot"></div>
+      <div>
+        <div class="wt">吃的時候要咀嚼</div>
+        <div class="wd">食物泥和蔬果昔富含膳食纖維。<br>
+        咀嚼能讓口腔分泌消化酶，更好吸收消化、也比較不會脹氣。</div>
+      </div>
+    </div>
+    <div class="wrow">
+      <div class="dot"></div>
+      <div>
+        <div class="wt">平常要多喝開水</div>
+        <div class="wd">讓腸胃蠕動更順暢。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint" style="background:var(--gold-lt);border-color:#EBD9AE;color:#7A5712">
+    如有特殊飲食限制，請先諮詢醫師或營養師。
+  </div>
+
+  <div class="foot">天晴工作坊</div>
+</div>
+</body>
+</html>
